@@ -14,7 +14,7 @@ pos = None
 capture = False
 
 screen = pygame.display.set_mode((SCREEN_WIDHT, SCREEN_HEIGHT))
-pygame.display.set_caption('Chess')
+pygame.display.set_caption('chess')
 
 clock = pygame.time.Clock()
 
