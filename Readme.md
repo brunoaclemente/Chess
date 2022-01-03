@@ -1,2 +1,1 @@
-hello, this project helps you get around git
-this is an alteration
+Olá, Aqui tem a minha tentativa de fazer um xadrez em python.
