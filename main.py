@@ -21,9 +21,11 @@ def draw_background(screen, size, pos=None):
             for position in pos:
                 if i == position[0] and j == position[1]:
                     if not position[2]:
-                        pygame.draw.circle(screen, (219, 165, 140), (j*size+(size/2), i*size+(size/2)), size/7)
+                        pygame.draw.circle(screen, (219, 165, 140), (j * size + (size / 2), i * size + (size / 2)),
+                                           size / 7)
                     else:
-                        pygame.draw.circle(screen, (219, 165, 140), (j*size+(size/2), i*size+(size/2)), size/2, 5)
+                        pygame.draw.circle(screen, (219, 165, 140), (j * size + (size / 2), i * size + (size / 2)),
+                                           size / 2, 5)
 
 
 def draw_pieces(sF, screen, size):
@@ -34,16 +36,21 @@ def draw_pieces(sF, screen, size):
             if co in 'bknpqr':
                 file = f'Images/{co}.png'
                 p = pygame.image.load(file)
-                p = pygame.transform.scale(p, (int(size), int(size)))
-                screen.blit(p, [x, y])
+                p = pygame.transform.scale(p, (int(size-10), int(size-10)))
+                screen.blit(p, [x+10, y+10])
             elif co in 'BKNPQR':
                 file = f'Images/{co.lower()}w.png'
                 p = pygame.image.load(file)
-                p = pygame.transform.scale(p, (int(size), int(size)))
-                screen.blit(p, [x, y])
+                p = pygame.transform.scale(p, (int(size-10), int(size-10)))
+                screen.blit(p, [x+3, y+5])
+
+
+king = False
+KING = False
 
 
 def checkingMovement(piece, startFEN, i, j, eat=False):
+    global king, KING
     if piece[0] in 'pP':
         if eat:
             if i != piece[1] and j != piece[2]:
@@ -74,7 +81,50 @@ def checkingMovement(piece, startFEN, i, j, eat=False):
         return False
     if piece[0] in 'kK':
         if math.sqrt((i - piece[1]) ** 2) <= 1 and math.sqrt((j - piece[2]) ** 2) <= 1:
+            if piece[0] == "K":
+                king = True
+            else:
+                KING = True
+            print(KING, king)
             return True
+        if piece[0] == "K":
+            if math.sqrt((j - piece[2]) ** 2) == 2 and i in [0, 7] and piece[2] == 4 and not KING:
+                if startFEN[i][piece[2] + 3] in "rR" or startFEN[i][piece[2] - 4] in "rR":
+                    if j - piece[2] == 2:
+                        if startFEN[i][piece[2] + 3] == "R":
+                            startFEN[i][piece[2] + 3] = "-"
+                            startFEN[i][5] = "R"
+                        elif startFEN[i][piece[2] + 3] in "r":
+                            startFEN[i][piece[2] + 3] = "-"
+                            startFEN[i][5] = "r"
+                    if j - piece[2] == -2:
+                        if startFEN[i][piece[2] - 4] == "R":
+                            startFEN[i][piece[2] - 4] = "-"
+                            startFEN[i][3] = "R"
+                        elif startFEN[i][piece[2] - 4] in "r":
+                            startFEN[i][piece[2] - 4] = "-"
+                            startFEN[i][3] = "r"
+                    KING = True
+                    return True
+        else:
+            if math.sqrt((j - piece[2]) ** 2) == 2 and i in [0, 7] and piece[2] == 4 and not king:
+                if startFEN[i][piece[2] + 3] in "rR" or startFEN[i][piece[2] - 4] in "rR":
+                    if j - piece[2] == 2:
+                        if startFEN[i][piece[2] + 3] == "R":
+                            startFEN[i][piece[2] + 3] = "-"
+                            startFEN[i][5] = "R"
+                        elif startFEN[i][piece[2] + 3] in "r":
+                            startFEN[i][piece[2] + 3] = "-"
+                            startFEN[i][5] = "r"
+                    if j - piece[2] == -2:
+                        if startFEN[i][piece[2] - 4] == "R":
+                            startFEN[i][piece[2] - 4] = "-"
+                            startFEN[i][3] = "R"
+                        elif startFEN[i][piece[2] - 4] in "r":
+                            startFEN[i][piece[2] - 4] = "-"
+                            startFEN[i][3] = "r"
+                    KING = True
+                    return True
         return False
     if piece[0] in 'nN':
         if math.sqrt((i - piece[1]) ** 2) == 2 and math.sqrt((j - piece[2]) ** 2) == 1:
@@ -159,15 +209,16 @@ def checkingMovement(piece, startFEN, i, j, eat=False):
 
 
 def possibilities(piece, startFEN, i, j):
+    global king, KING
     possibility = []
     if piece[0] in 'pP':
         if piece[0] == 'p':
-            if startFEN[i+1][j] == '-':
-                possibility.append([i+1, j, False])
-            if i == 1 and startFEN[i+1][j] == '-' and startFEN[i+2][j] == '-':
-                possibility.append([i+2, j, False])
+            if startFEN[i + 1][j] == '-':
+                possibility.append([i + 1, j, False])
+            if i == 1 and startFEN[i + 1][j] == '-' and startFEN[i + 2][j] == '-':
+                possibility.append([i + 2, j, False])
             try:
-                if startFEN[i+1][j+1] in 'BKNPQR':
+                if startFEN[i + 1][j + 1] in 'BKNPQR':
                     possibility.append([i + 1, j + 1, True])
             except IndexError:
                 pass
@@ -182,16 +233,34 @@ def possibilities(piece, startFEN, i, j):
             if i == 6 and startFEN[i - 1][j] == '-' and startFEN[i - 2][j] == '-':
                 possibility.append([i - 2, j, False])
             try:
-                if startFEN[i-1][j+1] in 'bknpqr':
+                if startFEN[i - 1][j + 1] in 'bknpqr':
                     possibility.append([i - 1, j + 1, True])
             except IndexError:
                 pass
             try:
-                if startFEN[i-1][j-1] in 'bknpqr':
+                if startFEN[i - 1][j - 1] in 'bknpqr':
                     possibility.append([i - 1, j - 1, True])
             except IndexError:
                 pass
     elif piece[0] in 'kK':
+        if piece[0] == "K":
+            if i in [0, 7] and piece[2] == 4 and not KING:
+                if startFEN[i][piece[2] + 3] in "rR" or startFEN[i][piece[2] - 4] in "rR":
+                    if startFEN[i][piece[2] + 1] == "-" and startFEN[i][piece[2] + 2] == "-":
+                        possibility.append([i, piece[2] + 2, False])
+                    if startFEN[i][piece[2] - 1] == "-" and startFEN[i][piece[2] - 2] == "-" and \
+                            startFEN[i][piece[2]-3] == "-":
+                        possibility.append([i, piece[2] - 2, False])
+
+        else:
+            if i in [0, 7] and piece[2] == 4 and not king:
+                if startFEN[i][piece[2] + 3] in "rR" or startFEN[i][piece[2] - 4] in "rR":
+                    if startFEN[i][piece[2] + 1] == "-" and startFEN[i][piece[2] + 2] == "-":
+                        possibility.append([i, piece[2] + 2, False])
+                    if startFEN[i][piece[2] - 1] == "-" and startFEN[i][piece[2] - 2] == "-" and \
+                            startFEN[i][piece[2] - 3] == "-":
+                        possibility.append([i, piece[2] - 2, False])
+
         try:
             if startFEN[i + 1][j] == '-':
                 possibility.append([i + 1, j, False])
