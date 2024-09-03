@@ -1,7 +1,8 @@
 import pygame
 from pygame.locals import *
-from Bruno_Project.Most_used.cores import *
+from Most_used.cores import *
 import math
+from lib import mod
 
 
 def draw_background(screen, size, pos=None):
@@ -26,6 +27,19 @@ def draw_background(screen, size, pos=None):
                     else:
                         pygame.draw.circle(screen, (219, 165, 140), (j * size + (size / 2), i * size + (size / 2)),
                                            size / 2, 5)
+    font = pygame.font.SysFont("comicsans", 40)
+    whitel = font.render(
+        'a                             c                             e                              g',
+        True, white_color)
+    blackl = font.render(
+        'b                             d                             f                              h',
+        True, black_color)
+    text_rect1 = whitel.get_rect()
+    text_rect1.center = [489, 985]
+    text_rect2 = blackl.get_rect()
+    text_rect2.center = [614, 985]
+    screen.blit(whitel, text_rect1)
+    screen.blit(blackl, text_rect2)
 
 
 def draw_pieces(sF, screen, size):
@@ -47,6 +61,46 @@ def draw_pieces(sF, screen, size):
 
 king = False
 KING = False
+
+
+'''class Piece:
+    def __init__(self, i, j, startFEN, piece, eat=False):
+        self.line = i
+        self.column = j
+        self.pos_pieces = startFEN
+        self.piece = piece[0]
+        self.pos = piece[1:]
+        self.eat = eat
+
+    def p(self):
+        if self.eat:
+            if self.line != self.piece[1] and self.column != self.piece[2]:
+                if mod(self.line - self.pos[1]) == mod(self.column - self.pos[2]) == 1:
+                    if self.piece in 'bknpqr' and self.line - self.pos[1] > 0:
+                        return True
+                    elif self.piece in 'BKNPQR' and self.line - self.pos[1] < 0:
+                        return True
+        else:
+            if mod(self.line - self.pos[1]) == 2:
+                if self.line - self.pos[1] < 0:
+                    new_pos = self.line + 1
+                else:
+                    new_pos = self.line - 1
+                if startFEN[new_pos][j] != '-':
+                    return False
+            if piece[2] == j and piece[1] in [6, 1]:
+                if math.sqrt((i - piece[1]) ** 2) <= 2:
+                    if piece[0] in 'bknpqr' and i - piece[1] > 0:
+                        return True
+                    elif piece[0] in 'BKNPQR' and i - piece[1] < 0:
+                        return True
+            elif piece[2] == j and math.sqrt((i - piece[1]) ** 2) == 1:
+                if piece[0] in 'bknpqr' and i - piece[1] > 0:
+                    return True
+                elif piece[0] in 'BKNPQR' and i - piece[1] < 0:
+                    return True
+            return False
+        else:'''
 
 
 def checkingMovement(piece, startFEN, i, j, eat=False):
